@@ -1,0 +1,255 @@
+- name: Get state of freeswitch scripts
+  stat:
+    path: /usr/share/freeswitch/scripts
+  register: scripts
+  tags:
+    - astpp
+
+- name: Remove script folder
+  become: true
+  file:
+    state: absent
+    path: /usr/share/freeswitch/scripts
+  when: scripts.stat.islnk is defined and not scripts.stat.islnk
+  tags:
+    - astpp
+
+- name: Create symbolic links
+  become: true
+  file:
+    state: link
+    src: /opt/astpp/freeswitch/scripts
+    dest: /usr/share/freeswitch/scripts
+  tags:
+    - astpp
+
+- name: Identify music messages
+  become: true
+  find:
+    paths:
+      - /opt/astpp/freeswitch/sounds/
+    patterns: "*.wav"
+  register: musics
+  tags:
+    - astpp
+
+- name: Copy music messages
+  become: true
+  file:
+    src: "{{ item.path }}"
+    dest: "/usr/share/freeswitch/sounds/en/us/callie/{{ item.path | basename }}"
+    state: link
+  loop: "{{ musics.files }}"
+  tags:
+    - astpp
+
+- name: Identify settings files
+  become: true
+  find:
+    paths:
+      - /opt/astpp/freeswitch/conf/autoload_configs/
+    patterns: "*.xml"
+  register: settings
+  tags:
+    - astpp
+
+- name: Copy ASTPP settings files [freeswitch]
+  become: true
+  copy:
+    src: "{{ item.path }}"
+    dest: "/etc/freeswitch/autoload_configs/{{ item.path | basename }}"
+    remote_src: yes
+  loop: "{{ settings.files }}"
+  notify:
+    - Restart freeswitch
+  tags:
+    - astpp
+
+- name: Create switch file
+  become: true
+  template:
+    src: switch.conf.xml.j2
+    dest: /etc/freeswitch/autoload_configs/switch.conf.xml
+  notify:
+    - Restart freeswitch
+  tags:
+    - astpp
+
+- name: Identify old dialplans
+  become: true
+  find:
+    paths:
+      - /etc/freeswitch/dialplan/
+    recurse: yes
+    patterns: "*"
+  register: dialplans
+  tags:
+    - astpp
+
+- name: Remove old dialplans
+  become: true
+  file:
+    state: absent
+    path: "{{ item.path }}"
+  loop: "{{ dialplans.files }}"
+  when: item.path != "/etc/freeswitch/dialplan/astpp.xml"
+  notify:
+    - Restart freeswitch
+  tags:
+    - astpp
+
+- name: Create ASTPP dialplan
+  become: true
+  file:
+    path: /etc/freeswitch/dialplan/astpp.xml
+    state: touch
+  notify:
+    - Restart freeswitch
+  tags:
+    - astpp
+
+- name: Identify old directory files
+  become: true
+  find:
+    paths:
+      - /etc/freeswitch/directory/
+    recurse: yes
+    patterns: "*"
+  register: directory
+  tags:
+    - astpp
+
+- name: Remove old directory files
+  become: true
+  file:
+    state: absent
+    path: "{{ item.path }}"
+  loop: "{{ directory.files }}"
+  when: item.path != "/etc/freeswitch/directory/astpp.xml"
+  notify:
+    - Restart freeswitch
+  tags:
+    - astpp
+
+- name: Create ASTPP directory
+  become: true
+  file:
+    path: /etc/freeswitch/directory/astpp.xml
+    state: touch
+  notify:
+    - Restart freeswitch
+  tags:
+    - astpp
+
+- name: Identify old sip profiles
+  become: true
+  find:
+    paths:
+      - /etc/freeswitch/sip_profiles/
+    recurse: yes
+    patterns: "*"
+  register: profiles
+  tags:
+    - astpp
+
+- name: Remove old sip profiles
+  become: true
+  file:
+    state: absent
+    path: "{{ item.path }}"
+  loop: "{{ profiles.files }}"
+  when: item.path != "/etc/freeswitch/sip_profiles/astpp.xml"
+  notify:
+    - Restart freeswitch
+  tags:
+    - astpp
+
+- name: Create ASTPP SIP profile
+  become: true
+  file:
+    path: /etc/freeswitch/sip_profiles/astpp.xml
+    state: touch
+  notify:
+    - Restart freeswitch
+  tags:
+    - astpp
+
+- name: Change owner of web dir's
+  become: true
+  file:
+    path: "{{ item }}"
+    state: directory
+    recurse: yes
+    owner: nginx
+    group: nginx
+  loop: "{{ php.directories }}"
+  notify:
+    - Restart nginx
+    - Restart php-fpm
+  tags:
+    - astpp
+
+- name: Change owner of source dir's
+  become: true
+  file:
+    path: "{{ item }}"
+    state: directory
+    recurse: yes
+    owner: nginx
+    group: nginx
+  loop: 
+    - /opt/astpp/web/ui
+    - /opt/astpp/web/api
+  notify:
+    - Restart nginx
+    - Restart php-fpm
+  tags:
+    - astpp
+
+- name: Copy nginx settings
+  become: true
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: nginx
+    group: nginx
+  loop:
+    - src: nginx/ui.conf
+      dest: /etc/nginx/conf.d/ui.conf
+    - src: nginx/api.conf
+      dest: /etc/nginx/conf.d/api.conf
+  notify:
+    - Restart nginx
+    - Restart php-fpm
+  tags:
+    - astpp
+
+- name: Create ASTPP logs
+  become: true
+  file:
+    path: "{{ item }}"
+    state: touch
+  loop:
+   - /var/log/astpp/astpp.log
+   - /var/log/astpp/astpp_email.log
+  tags:
+    - astpp
+
+- name: Configure ASTPP core files
+  become: true
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ item.owner }}"
+    group: "{{ item.group }}"
+  loop:
+    - src: astpp-config.conf.j2
+      dest: /var/lib/astpp/astpp-config.conf
+      owner: nginx
+      group: nginx
+    - src: astpp.lua.j2
+      dest: /var/lib/astpp/astpp.lua
+      owner: freeswitch
+      group: daemon
+  tags:
+    - astpp

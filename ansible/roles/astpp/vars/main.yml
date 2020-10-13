@@ -1,0 +1,85 @@
+---
+releases:
+  freeswitch: https://files.freeswitch.org/repo/yum/centos-release/freeswitch-release-repo-0-1.noarch.rpm
+  epel: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+  remi: http://rpms.remirepo.net/enterprise/remi-release-7.rpm
+
+astpp:
+  repo: https://github.com/Otoru/ASTPP
+  version: v3.6
+
+dependencies:
+  - curl
+  - libxml2
+  - libxml2-devel
+  - curl-devel
+  - cpio
+  - automake
+  - bzip2
+  - autoconf
+  - yum-utils
+  - ngrep
+  - mysql
+  - wget
+  - htop
+  - git
+  - curl
+  - bind-utils 
+  - net-tools
+  - whois 
+  - sendmail
+  - sendmail-cf 
+  - mlocate 
+  - vim
+  - unixODBC
+  - python2-pip
+  - mysql-connector-odbc
+
+freeswitch:
+  modules:
+    - freeswitch-config-vanilla
+    - freeswitch-lang-en
+    - freeswitch-lang-pt
+    - freeswitch-sounds-en-us-allison-all
+    - freeswitch-sounds-en-us-callie-all
+    - freeswitch-sounds-music 
+    - freeswitch-sounds-pt-BR-karina-all
+    - freeswitch-xml-curl 
+    - freeswitch-event-json-cdr
+    - freeswitch-lua
+    - freeswitch-application-db
+    - freeswitch-application-voicemail
+
+php:
+  directories:
+    - /var/lib/astpp/
+    - /var/log/astpp/
+    - /usr/local/astpp/
+    - /var/www/html/
+    - /etc/nginx/ssl/
+    - /var/lib/astpp/.semaphores/
+  dependencies:
+    - nginx
+    - libxml2
+    - libxml2-devel
+    - openssl
+    - openssl-devel
+    - gettext-devel
+    - fileutils
+    - gcc-c++
+  modules:
+    - php
+    - php-pdo
+    - php-devel
+    - php-fpm
+    - php-common
+    - php-mysql
+    - php-cli
+    - php-json
+    - php-readline
+    - php-xml
+    - php-curl
+    - php-gd
+    - php-pear
+    - php-mbstring
+    - php-pecl-json

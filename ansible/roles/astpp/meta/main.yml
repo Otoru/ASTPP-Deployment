@@ -1,0 +1,12 @@
+galaxy_info:
+  author: Vitor Hugo de O. Vargas
+  description: Install and configure ASTPP
+  license: MIT
+  min_ansible_version: 2.9
+  platforms:
+    - name: Amazon
+      versions:
+        - all
+  galaxy_tags: []
+dependencies: []
+  

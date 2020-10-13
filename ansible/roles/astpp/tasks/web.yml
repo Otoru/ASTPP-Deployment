@@ -1,0 +1,74 @@
+- name: Create directories
+  become: true
+  file:
+    recurse: yes
+    path: "{{ item }}"
+    state: directory
+  loop: "{{ php.directories }}"
+  tags:
+    - web
+
+- name: Install remi-release
+  become: true
+  yum:
+    name: "{{ releases.remi }}"
+    state: present
+  tags:
+    - web
+
+- name: Install PHP and modules
+  become: true
+  yum:
+    state: present
+    name: "{{ item }}"
+    enablerepo: "remi-php70"
+  loop: "{{ php.modules }}"
+  tags:
+    - web
+
+- name: Install PHP mcrypt
+  become: true
+  yum:
+    state: present
+    name: php-mcrypt
+    enablerepo: "epel"
+  tags:
+    - web
+
+- name: Create php settings files
+  become: true
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  loop:
+    - src: www.conf
+      dest: /etc/php-fpm.d/www.conf
+    - src: php.ini
+      dest: /etc/php.ini
+  notify:
+    - Restart php-fpm
+  tags:
+    - web
+
+- name: Install Webserver and dependencies
+  become: true
+  yum:
+    state: present
+    name: "{{ item }}"
+  loop: "{{ php.dependencies }}"
+  tags:
+    - web
+
+- name: Create symbolic links
+  become: true
+  file:
+    state: link
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  loop:
+    - src: /opt/astpp/web/api
+      dest: /var/www/html/api
+    - src: /opt/astpp/web/ui
+      dest: /var/www/html/ui
+  tags:
+    - web

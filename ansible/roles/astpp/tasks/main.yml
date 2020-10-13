@@ -1,0 +1,49 @@
+- name: Install Prerequisties
+  include_tasks: 
+    file: prerequisties.yml
+  tags:
+    - prerequisties
+
+- name: Get source code
+  include_tasks:
+    file: source.yml
+  tags:
+    - source
+
+- name: Install freeswitch
+  include_tasks:
+    file: freeswitch.yml
+  tags:
+    - freeswitch
+
+- name: Configure web
+  include_tasks:
+    file: web.yml
+  tags:
+    - web
+
+- name: Generate certificate
+  include_tasks:
+    file: certificate.yml
+  tags:
+    - web
+    - certificate
+
+- name: Normalize database
+  include_tasks:
+    file: database.yml
+  tags:
+    - database
+
+- name: Configure ASTPP
+  include_tasks:
+    file: astpp.yml
+  tags:
+    - astpp
+
+- name: Configure Crontab
+  include_tasks:
+    file: crontab.yml
+  tags:
+    - astpp
+    - crontab

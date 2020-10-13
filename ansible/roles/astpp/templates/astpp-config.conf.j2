@@ -1,0 +1,13 @@
+dbhost = "{{ database.host }}"
+dbname = "{{ database.name }}"
+dbuser = "{{ database.user }}"
+dbpass = "{{ database.password }}"
+
+PRIVATE_KEY = "{{ web.key.privacity }}"
+ENCRYPTION_KEY = "{{ web.key.encryption }}"
+
+astpp_dbengine = "MySQLi"
+
+; Do we want the startup of ASTPP debugged?
+debug = 0
+base_url="{{ web.host }}"

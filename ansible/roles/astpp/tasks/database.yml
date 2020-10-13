@@ -1,0 +1,54 @@
+- name: Install PyMySQL
+  become: true
+  pip:
+    name: PyMySQL
+  tags:
+    - database
+
+- name: Configure odbc
+  become: true
+  template:
+    src: odbc.ini.j2
+    dest: /etc/odbc.ini
+  tags:
+    - database
+
+- name: Get state of database semaphore
+  stat:
+    path: /var/lib/astpp/.semaphores/database
+  register: semaphore
+  tags:
+    - database
+
+- name: Apply fix in files [DEFINER]
+  become: true
+  replace:
+    path: "{{ item }}"
+    regexp: 'DEFINER=`[^`]+`@`[^`]+`'
+    replace: ''
+  when: semaphore.stat.exists is defined and not semaphore.stat.exists
+  loop:
+    - /opt/astpp/database/astpp-3.0.sql
+    - /opt/astpp/database/astpp-upgrade-3.5.sql
+    - /opt/astpp/database/astpp-upgrade-3.6.sql
+  tags:
+    - database
+
+- name: Import SQL files
+  become: true
+  mysql_db:
+    state: import
+    name: "{{ database.name }}"
+    login_host: "{{ database.host }}"
+    login_user: "{{ database.user }}"
+    login_password: "{{ database.password }}"
+    target: "{{ item }}"
+  when: semaphore.stat.exists is defined and not semaphore.stat.exists
+  loop:
+    - /opt/astpp/database/astpp-3.0.sql
+    - /opt/astpp/database/astpp-upgrade-3.5.sql
+    - /opt/astpp/database/astpp-upgrade-3.6.sql
+  notify:
+    - Create database semaphore
+  tags:
+    - database

@@ -1,0 +1,16 @@
+- name: Install epel-release
+  become: true
+  yum:
+    name: "{{ releases.epel }}"
+    state: present
+  tags:
+    - prerequisties
+
+- name: Install dependencies
+  become: true
+  yum:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ dependencies }}"
+  tags:
+    - prerequisties

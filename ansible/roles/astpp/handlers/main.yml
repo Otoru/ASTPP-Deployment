@@ -1,0 +1,24 @@
+---
+- name: Restart nginx
+  become: true
+  service:
+    enabled: yes
+    name: nginx
+    state: restarted
+- name: Restart freeswitch
+  become: true
+  service:
+    enabled: yes
+    name: freeswitch
+    state: restarted
+- name: Restart php-fpm
+  become: true
+  service:
+    enabled: yes
+    name: php-fpm
+    state: restarted
+- name: Create database semaphore
+  become: true
+  file:
+    path: /var/lib/astpp/.semaphores/database
+    state: touch

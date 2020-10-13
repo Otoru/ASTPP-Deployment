@@ -1,0 +1,22 @@
+- name: settings zsh
+  hosts: all
+  roles:
+    - role: gantsign.oh-my-zsh
+      users:
+        - username: root
+          oh_my_zsh:
+            theme: cloud
+        - username: ec2-user
+          oh_my_zsh:
+            theme: cloud
+    - role: astpp
+      database:
+        host: astpp.ceeq0xxveqfp.us-east-1.rds.amazonaws.com
+        password: E!NnX5rhHxedJr9BMzZQPxjC
+        name: astpp
+        user: astpp
+      web:
+        key:
+          privacity: 8YSDaBtDHAB3EQkxPAyTz2I5DttzA9uR
+          encryption: r1fddEw232f
+        host: https://ec2-54-227-81-167.compute-1.amazonaws.com/

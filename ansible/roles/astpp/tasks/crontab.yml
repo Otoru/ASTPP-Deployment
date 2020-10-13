@@ -1,0 +1,59 @@
+- name: Adding Generate Invoice to crontab
+  become: true
+  cron:
+    name: Generate Invoice
+    user: root
+    minute: "0"
+    hour: "12"
+    job: "cd /opt/astpp/web/ui/cron/  && php cron.php GenerateInvoice"
+  tags:
+    - astpp
+    - crontab
+
+- name: Adding Update Balance to crontab
+  become: true
+  cron:
+    name: Update Balance
+    user: root
+    minute: "0"
+    hour: "12"
+    job: "cd /opt/astpp/web/ui/cron/  && php cron.php UpdateBalance"
+  tags:
+    - astpp
+    - crontab
+
+- name: Adding Low Balance to crontab
+  become: true
+  cron:
+    name: Low Balance
+    user: root
+    minute: "0"
+    hour: "0"
+    job: "cd /opt/astpp/web/ui/cron/  && php cron.php LowBalance"
+  tags:
+    - astpp
+    - crontab
+
+- name: Adding Currency Update to crontab
+  become: true
+  cron:
+    name: Currency Update
+    user: root
+    minute: "0"
+    hour: "0"
+    job: "cd /opt/astpp/web/ui/cron/  && php cron.php CurrencyUpdate"
+  tags:
+    - astpp
+    - crontab
+
+- name: Adding Broadcast Email to crontab
+  become: true
+  cron:
+    name: Broadcast Email
+    user: root
+    minute: "0"
+    hour: "0"
+    job: "cd /opt/astpp/web/ui/cron/  && php cron.php BroadcastEmail"
+  tags:
+    - astpp
+    - crontab

@@ -1,0 +1,16 @@
+- name: Install freeswitch-release
+  become: true
+  yum:
+    name: "{{ releases.freeswitch }}"
+    state: present
+  tags:
+    - freeswitch
+
+- name: Install freeswitch modules
+  become: true
+  yum:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ freeswitch.modules }}"
+  tags:
+    - freeswitch

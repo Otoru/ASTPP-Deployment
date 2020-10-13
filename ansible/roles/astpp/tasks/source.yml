@@ -1,0 +1,9 @@
+- name: get ASTPP source code
+  become: true
+  git:
+    repo: "{{ astpp.repo }}"
+    dest: /opt/astpp
+    force: yes
+    version: "{{ astpp.version }}"
+  tags:
+    - source

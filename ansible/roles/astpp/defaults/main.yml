@@ -1,0 +1,11 @@
+---
+odbc:
+  SERVER: localhost
+  PASSWORD: password
+  DATABASE: astpp
+  USERNAME: astpp
+web:
+  key:
+    privacity: privacity
+    encryption: encryption
+  host: https://localhost/

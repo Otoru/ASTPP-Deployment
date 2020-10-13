@@ -1,0 +1,55 @@
+- name: Get state of private key
+  stat:
+    path: /etc/nginx/ssl/nginx.key
+  register: private
+  tags:
+    - web
+    - certificate
+
+- name: Generate an OpenSSL private key
+  become: true
+  community.crypto.openssl_privatekey:
+    path: /etc/nginx/ssl/nginx.key
+  when: private.stat.exists is defined and not private.stat.exists
+  tags:
+    - web
+    - certificate
+
+- name: Get state of Certificate Signing Request
+  stat:
+    path: /etc/nginx/ssl/nginx.csr
+  register: csr
+  tags:
+    - web
+    - certificate
+
+- name: Generate an Certificate Signing Request
+  become: true
+  community.crypto.openssl_csr:
+    path: /etc/nginx/ssl/nginx.csr
+    privatekey_path: /etc/nginx/ssl/nginx.key
+    common_name: "{{ ansible_hostname }}"
+  when: csr.stat.exists is defined and not csr.stat.exists
+  tags:
+    - web
+    - certificate
+
+- name: Get state of Self Signed Certificate
+  stat:
+    path: /etc/nginx/ssl/nginx.crt
+  register: crt
+  tags:
+    - web
+    - certificate
+
+- name: Generate a Self Signed OpenSSL Certificate
+  become: true
+  community.crypto.x509_certificate:
+    path: /etc/nginx/ssl/nginx.crt
+    privatekey_path: /etc/nginx/ssl/nginx.key
+    csr_path: /etc/nginx/ssl/nginx.csr
+    provider: selfsigned
+  when: crt.stat.exists is defined and not crt.stat.exists
+  tags:
+    - web
+    - certificate
