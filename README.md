@@ -34,6 +34,10 @@ In ansible directory, edit a `playbook.yml` with the correct variables (like a `
 
 Run `ansible-playbook playbook.yml` in ansible directory.
 
+### Comments
+
+- All variables and hosts present in the repository are illustrative and it is up to the user to edit them.
+
 ## License
 
 See [LICENSE.md](./LICENSE.md) for more details.
